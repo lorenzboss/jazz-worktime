@@ -27,7 +27,7 @@ export function readTimes() {
   return [
     { text: "Time spent", value: calculator.timeSpent(times) },
     { text: "Time to go", value: calculator.timeToGo(times) },
-    { text: "Time to go Home!!!", value: calculator.goTime(times) },
+    { text: "Go Home!", value: calculator.goTime(times) },
   ];
 }
 
