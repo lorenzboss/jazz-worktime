@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Jazz Worktime",
+  "version": "1.0",
+  "permissions": ["scripting"],
+  "host_permissions": ["https://jazz.coop.ch/mobile/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://jazz.coop.ch/mobile/*"],
+      "js": ["dist/main.bundle.js"]
+    }
+  ]
+}
