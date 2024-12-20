@@ -1,4 +1,5 @@
 import { TimeCalculator } from "./calculator.js";
+import { Time } from "./time.js";
 
 export function displayTime(time, description) {
   return `
@@ -11,6 +12,9 @@ export function displayTime(time, description) {
 
 export function readTimes() {
   const timeElements = document.querySelectorAll(".today.stempel-day .time");
+  const absenceElements = document.querySelectorAll(
+    ".today.stempel-day .absence-type"
+  );
 
   if (!timeElements.length) return false;
 
@@ -22,12 +26,18 @@ export function readTimes() {
     }
   });
 
+  const absenceTime = getAbsenceTime(absenceElements);
+
   const calculator = new TimeCalculator("0:30", "8:12");
 
+  const timeSpent = calculator.timeSpent(times).add(absenceTime);
+  const timeToGo = calculator.timeToGo(times).sub(absenceTime);
+  const goHomeTime = calculator.goTime(times).sub(absenceTime);
+
   return [
-    { text: "Time spent", value: calculator.timeSpent(times) },
-    { text: "Time to go", value: calculator.timeToGo(times) },
-    { text: "Go Home!", value: calculator.goTime(times) },
+    { text: "Time spent", value: timeSpent },
+    { text: "Time to go", value: timeToGo },
+    { text: "Go Home!", value: goHomeTime },
   ];
 }
 
@@ -48,6 +58,8 @@ export function display(times) {
 
   if (isOvertime) {
     document.querySelector(".timing").classList.add("pulse");
+  } else {
+    document.querySelector(".timing").classList.remove("pulse");
   }
 }
 
@@ -82,4 +94,21 @@ function createWrapper() {
     );
 
   return wrapper;
+}
+
+function getAbsenceTime(absenceElements) {
+  let totalAbsenceMinutes = 10;
+
+  absenceElements.forEach((absenceElement) => {
+    const timeText = absenceElement.textContent.trim();
+    const timeMatch = timeText.match(/(\d+):(\d+) Std./);
+
+    if (timeMatch) {
+      const hours = parseInt(timeMatch[1]);
+      const minutes = parseInt(timeMatch[2]);
+      totalAbsenceMinutes += hours * 60 + minutes;
+    }
+  });
+
+  return Time.fromTotalMinutes(totalAbsenceMinutes);
 }
