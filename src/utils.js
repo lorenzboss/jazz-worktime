@@ -97,7 +97,7 @@ function createWrapper() {
 }
 
 function getAbsenceTime(absenceElements) {
-  let totalAbsenceMinutes = 10;
+  let totalAbsenceMinutes = 0;
 
   absenceElements.forEach((absenceElement) => {
     const timeText = absenceElement.textContent.trim();
