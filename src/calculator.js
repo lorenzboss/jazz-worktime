@@ -57,7 +57,7 @@ export class TimeCalculator {
 
   goTime(checkpoints) {
     return this.timeToGo(checkpoints).isNegative
-      ? new Time()
+      ? new Time().sub(this.timeToGo(checkpoints))
       : new Time().add(this.timeToGo(checkpoints));
   }
 
