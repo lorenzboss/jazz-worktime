@@ -57,9 +57,9 @@ export function display(times) {
   });
 
   if (isOvertime) {
-    document.querySelector(".timing").classList.add("pulse");
+    document.querySelector(".timing").classList.add("unique-light-pulse");
   } else {
-    document.querySelector(".timing").classList.remove("pulse");
+    document.querySelector(".timing").classList.remove("unique-light-pulse");
   }
 }
 

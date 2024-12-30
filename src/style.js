@@ -2,7 +2,7 @@ export function injectStyles() {
   let style = document.createElement("style");
   style.type = "text/css";
   style.innerHTML = `
-      @keyframes pulse {
+      @keyframes unique-light-pulse-animation {
           from {
               transform: scale3d(1, 1, 1);
           }
@@ -14,8 +14,8 @@ export function injectStyles() {
           }
       }
       
-      .pulse {
-          animation-name: pulse;
+      .unique-light-pulse {
+          animation-name: unique-light-pulse-animation;
           animation-iteration-count: infinite;
           animation-duration: 3s;
           animation-fill-mode: both;
