@@ -28,7 +28,16 @@ export function readTimes() {
 
   const absenceTime = getAbsenceTime(absenceElements);
 
-  const calculator = new TimeCalculator("0:30", "8:12");
+  let calculator;
+
+  // It's allowed to work for 5 hours 30 minutes without a break
+  // 8:12 - 5:30 = 2:42 => If your absence time is more than 2:42, you don't have to take a break
+  // 2:42 = 162 minutes
+  if (absenceTime.getTotalMinutes() > 162) {
+    calculator = new TimeCalculator("0:00", "8:12");
+  } else {
+    calculator = new TimeCalculator("0:30", "8:12");
+  }
 
   const timeSpent = calculator.timeSpent(times).add(absenceTime);
   const timeToGo = calculator.timeToGo(times).sub(absenceTime);
