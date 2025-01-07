@@ -53,19 +53,9 @@ export class Time {
     );
   }
 
-  add(hours = null, minutes = null) {
-    let time = this.normalizeArguments(hours, minutes);
-    return Time.fromTotalMinutes(
-      time.getTotalMinutes() + this.getTotalMinutes()
-    );
-  }
-
   sub(hours, minutes) {
     let time = this.normalizeArguments(hours, minutes);
-    if (time instanceof Time) {
-      time.isNegative = !time.isNegative;
-    }
-    return this.add(time);
+    return this.add(new Time(time.hours, time.minutes, !time.isNegative));
   }
 
   compare(hours, minutes) {
