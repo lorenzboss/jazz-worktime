@@ -6,19 +6,25 @@ export class TimeCalculator {
     this.minimumWorkday = Time.fromString(minimumWorkday);
   }
 
+  getSortedCheckpoints(checkpoints) {
+    return [...checkpoints].sort((a, b) =>
+      Time.fromString(a).compare(Time.fromString(b))
+    );
+  }
+
   breaks(checkpoints) {
-    this.sort(checkpoints);
-    if (checkpoints.length < 2) return new Time(0, 0);
+    const sortedCheckpoints = this.getSortedCheckpoints(checkpoints);
+    if (sortedCheckpoints.length < 2) return new Time(0, 0);
 
     let breakTime = new Time(0, 0);
     let lastCheckoutTime = null;
 
-    for (let i = 1; i < checkpoints.length; i++) {
+    for (let i = 1; i < sortedCheckpoints.length; i++) {
       if (i % 2 === 1) {
-        lastCheckoutTime = Time.fromString(checkpoints[i]);
+        lastCheckoutTime = Time.fromString(sortedCheckpoints[i]);
       } else {
         breakTime = breakTime.add(
-          lastCheckoutTime.diff(Time.fromString(checkpoints[i]))
+          lastCheckoutTime.diff(Time.fromString(sortedCheckpoints[i]))
         );
       }
     }
@@ -27,19 +33,19 @@ export class TimeCalculator {
   }
 
   timeSpent(checkpoints) {
-    this.sort(checkpoints);
+    const sortedCheckpoints = this.getSortedCheckpoints(checkpoints);
 
-    if (checkpoints.length === 0) return new Time(0, 0);
+    if (sortedCheckpoints.length === 0) return new Time(0, 0);
 
-    if (checkpoints.length % 2 === 1) {
-      return Time.fromString(checkpoints[0])
+    if (sortedCheckpoints.length % 2 === 1) {
+      return Time.fromString(sortedCheckpoints[0])
         .diff(new Time())
-        .diff(this.breaks(checkpoints));
+        .diff(this.breaks(sortedCheckpoints));
     }
 
-    return Time.fromString(checkpoints[0])
-      .diff(Time.fromString(checkpoints[checkpoints.length - 1]))
-      .diff(this.breaks(checkpoints));
+    return Time.fromString(sortedCheckpoints[0])
+      .diff(Time.fromString(sortedCheckpoints[sortedCheckpoints.length - 1]))
+      .diff(this.breaks(sortedCheckpoints));
   }
 
   timeToGo(checkpoints) {
@@ -59,9 +65,5 @@ export class TimeCalculator {
     return this.timeToGo(checkpoints).isNegative
       ? new Time().sub(this.timeToGo(checkpoints))
       : new Time().add(this.timeToGo(checkpoints));
-  }
-
-  sort(checkpoints) {
-    checkpoints.sort((a, b) => Time.fromString(a).compare(Time.fromString(b)));
   }
 }
