@@ -1,0 +1,64 @@
+name: Build and Deploy to Build Repository
+
+on:
+  push:
+    branches: [main] #
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Setup SSH key for build repository
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.BUILD_REPO_DEPLOY_KEY }}
+
+      - name: Checkout build repository
+        uses: actions/checkout@v4
+        with:
+          repository: lorenzboss/jazz-worktime-build
+          ssh-key: ${{ secrets.BUILD_REPO_DEPLOY_KEY }}
+          path: build-repo
+
+      - name: Clear build repository (optional)
+        run: |
+          cd build-repo
+          # Lösche alle Dateien außer .git
+          find . -not -path './.git*' -delete
+
+      - name: Copy build artifacts
+        run: |
+          # Kopiere nur die Build-Outputs (passe Pfade an deine Struktur an)
+          cp -r dist/* build-repo/
+          # Falls du das manifest.json separat hast:
+          cp manifest.json build-repo/
+          # Oder falls es im dist Ordner ist, ist es bereits kopiert
+
+      - name: Commit and push to build repository
+        run: |
+          cd build-repo
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Auto-build from $(date)"
+            git push
+          else
+            echo "No changes to commit"
+          fi
